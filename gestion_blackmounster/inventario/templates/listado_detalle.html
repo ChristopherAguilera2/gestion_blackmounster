@@ -1,0 +1,189 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+    {% if item %}  <!-- Si se pasa un solo objeto 'item' es porque estamos en el detalle -->
+        <h1>Detalle de {{ item_type|capfirst }}</h1>
+        <table class="table">
+            <tr>
+                <th>Nombre</th>
+                <td>
+                    {% if item_type == 'pelicula' %}
+                        {{ item.titulo }}
+                    {% else %}
+                        {{ item.usuario }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Género</th>
+                <td>
+                    {% if item_type == 'pelicula' %}
+                        {{ item.genero }}
+                    {% else %}
+                        {{ item.pelicula }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Director</th>
+                <td>
+                    {% if item_type == 'pelicula' %}
+                        {{ item.director }}
+                    {% else %}
+                        {{ item.tipo }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Precio Compra</th>
+                <td>
+                    {% if item_type == 'pelicula' %}
+                        {{ item.precio_compra }}
+                    {% else %}
+                        {{ item.fecha_inicio }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Precio Arriendo</th>
+                <td>
+                    {% if item_type == 'pelicula' %}
+                        {{ item.precio_arriendo }}
+                    {% else %}
+                        {% if item.fecha_termino %}
+                            {{ item.fecha_termino }}
+                        {% else %}
+                            Indefinido
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Stock</th>
+                <td>
+                    {% if item_type == 'pelicula' %}
+                        {{ item.stock }}
+                    {% else %}
+                        {{ item.estado }}
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+        <div>
+            {% if item_type == 'pelicula' %}
+                {% if user.is_authenticated %}
+                    <a href="{% url 'transaccion_nueva' %}" class="btn btn-warning">Realizar Transaccion</a> |
+                {% endif %}
+            {% else %}
+            {% endif %}
+        </div>
+    {% else %}  <!-- Si no se pasa un solo 'item', entonces estamos en el listado -->
+    <div>
+        {% if item_type == 'pelicula' %}
+            {% if user.is_authenticated %}
+                {% if puede_add_pelicula %}
+                    <a href="{% url 'pelicula_nueva' %}" class="btn btn-warning">Agregar pelicula</a> |
+                {% endif %}
+            {% endif %}
+        {% else %}
+            {% if user.is_authenticated %}
+                <a href="{% url 'transaccion_nueva' %}" class="btn btn-warning">Realizar Transaccion</a> |
+            {% endif %}
+        {% endif %}
+    </div>
+        <h1>Listado de {{ item_type|capfirst }}s</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    {% if item_type == 'pelicula' %}
+                        <th>Nombre</th>
+                        <th>Género</th>
+                        <th>Director</th>
+                        <th>Precio Compra</th>
+                        <th>Precio Arriendo</th>
+                        <th>Stock</th>
+                    {% else %}
+                        <th>Usuario</th>
+                        <th>Película</th>
+                        <th>Tipo</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Término</th>
+                        <th>Estado</th>
+                    {% endif %}
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        {% if item_type == 'pelicula' %}
+                            {{ item.titulo }}
+                        {% else %}
+                            {{ item.usuario }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item_type == 'pelicula' %}
+                            {{ item.genero }}
+                        {% else %}
+                            {{ item.pelicula }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item_type == 'pelicula' %}
+                            {{ item.director }}
+                        {% else %}
+                            {{ item.tipo }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item_type == 'pelicula' %}
+                            {{ item.precio_compra }}
+                        {% else %}
+                            {{ item.fecha_inicio }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item_type == 'pelicula' %}
+                            {{ item.precio_arriendo }}
+                        {% else %}
+                            {% if item.fecha_termino %}
+                                {{ item.fecha_termino }}
+                            {% else %}
+                                Indefinido
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item_type == 'pelicula' %}
+                            {{ item.stock }}
+                        {% else %}
+                            {{ item.estado }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.is_authenticated %}
+                            {% if item_type == 'pelicula' %}
+                                <a href="{% url 'pelicula_detalle' pk=item.pk %}" class="btn btn-warning">Ver</a> |
+                                {% if puede_editar_pelicula %}
+                                    <a href="{% url 'pelicula_editar' pk=item.pk %}" class="btn btn-warning">Editar</a> |
+                                {% endif %}
+                                {% if puede_editar_pelicula %}
+                                    <a href="{% url 'pelicula_eliminar' pk=item.pk %}" class="btn btn-warning">Eliminar</a>
+                                {% endif %}
+                            {% else %}
+                                <a href="{% url 'transaccion_detalle' pk=item.pk %}" class="btn btn-warning">Ver</a> |
+                            {% endif %}
+                        {% else %}
+                            {% if item_type == 'pelicula' %}
+                                <a href="{% url 'pelicula_detalle' pk=item.pk %}" class="btn btn-warning">Ver</a> |
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
